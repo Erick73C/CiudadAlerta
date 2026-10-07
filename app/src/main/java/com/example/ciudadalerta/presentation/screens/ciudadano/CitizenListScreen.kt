@@ -1,19 +1,17 @@
 package com.example.ciudadalerta.presentation.screens.ciudadano
 
-
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -21,89 +19,140 @@ import com.example.ciudadalerta.presentation.navigation.Rutas
 
 /**
  *
- * Pantalla de inicio de sesión de la aplicación "Ciudad Alerta".
- * Contiene campos para correo electrónico y contraseña.
- * Por el momento, el botón de inicio de sesión navega directamente al flujo del ciudadano.
+ * Modelo de datos temporal para representar un reporte en la interfaz.
+ * Más adelante esto será reemplazado por la entidad real del dominio y base de datos.
+ * @author Erick Omar Perez Gonzalez
+ */
+data class ReporteDummy(
+    val id: String,
+    val titulo: String,
+    val descripcion: String,
+    val estatus: String,
+    val fecha: String
+)
+
+/**
+ *
+ * Pantalla que muestra el historial de reportes creados por el ciudadano.
+ * Utiliza un Scaffold para contener la barra superior, el botón de creación (FAB)
+ * y una LazyColumn para renderizar la lista de incidencias.
  * @author Erick Omar Perez Gonzalez
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController) {
-    // Variables de estado para los campos de texto
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+fun CitizenListScreen(navController: NavController) {
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // Título de la App
-        Text(
-            text = "Ciudad Alerta",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
+    // Lista de reportes harcodeados (Dummy Data) para ver el diseño
+    val listaReportes = listOf(
+        ReporteDummy("1", "Bache profundo", "Bache en el carril derecho que daña los neumáticos.", "Pendiente", "06/10/2026"),
+        ReporteDummy("2", "Luminaria fundida", "Poste de luz sin funcionar desde hace 3 días en el parque.", "En Revisión", "04/10/2026"),
+        ReporteDummy("3", "Fuga de agua", "Fuga constante de agua potable en la banqueta.", "Resuelto", "01/10/2026"),
+        ReporteDummy("4", "Semáforo descompuesto", "Semáforo parpadeando en rojo todo el día.", "Pendiente", "28/09/2026")
+    )
 
-        // Campo de Correo Electrónico
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Correo Electrónico") },
-            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email Icon") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            singleLine = true
-        )
-
-        // Campo de Contraseña
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") },
-            leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "Lock Icon") },
-            trailingIcon = {
-                val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
-
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = image, contentDescription = description)
-                }
-            },
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp),
-            singleLine = true
-        )
-
-        // Botón de Iniciar Sesión
-        Button(
-            onClick = {
-                // Navegación directa al listado de ciudadano.
-                // popUpTo asegura que si damos "Atrás", no volvamos a la pantalla de login.
-                navController.navigate(Rutas.CitizenList.ruta) {
-                    popUpTo(Rutas.Login.ruta) { inclusive = true }
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text("Iniciar Sesión", fontSize = 16.sp)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Mis Reportes", fontWeight = FontWeight.Bold) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate(Rutas.CreateReport.ruta) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Crear nuevo reporte")
+            }
         }
+    ) { paddingValues ->
+        // Contenedor principal de la lista
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(vertical = 16.dp)
+        ) {
+            items(listaReportes) { reporte ->
+                ReporteItem(reporte = reporte)
+            }
+        }
+    }
+}
 
-        Spacer(modifier = Modifier.height(16.dp))
+/**
+ *
+ * Componente visual (Tarjeta) que representa un elemento individual dentro de la lista de reportes.
+ * @author Erick Omar Perez Gonzalez
+ */
+@Composable
+fun ReporteItem(reporte: ReporteDummy) {
+    // Definimos un color dependiendo del estatus del reporte
+    val colorEstatus = when (reporte.estatus) {
+        "Pendiente" -> Color(0xFFE53935) // Rojo
+        "En Revisión" -> Color(0xFFFDD835) // Amarillo
+        "Resuelto" -> Color(0xFF43A047) // Verde
+        else -> Color.Gray
+    }
 
-        // Botón de texto para recuperar contraseña (visual por ahora)
-        TextButton(onClick = { /* Pendiente */ }) {
-            Text("¿Olvidaste tu contraseña?")
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = reporte.titulo,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                // Etiqueta del estatus
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = colorEstatus.copy(alpha = 0.2f),
+                    contentColor = colorEstatus
+                ) {
+                    Text(
+                        text = reporte.estatus,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = reporte.descripcion,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "Fecha de reporte: ${reporte.fecha}",
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.align(Alignment.End)
+            )
         }
     }
 }

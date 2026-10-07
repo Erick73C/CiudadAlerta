@@ -12,7 +12,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.ciudadalerta.presentation.screens.ciudadano.LoginScreen
+import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListScreen
+import com.example.ciudadalerta.presentation.screens.login.LoginScreen
+
 
 /**
  *
@@ -36,35 +38,14 @@ fun AppNavigation() {
         // 1. Pantalla de Login
         composable(route = Rutas.Login.ruta) {
             LoginScreen(navController = navController)
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("Pantalla de Login")
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { navController.navigate(Rutas.CitizenList.ruta) }) {
-                    Text("Entrar como Ciudadano")
-                }
-                Button(onClick = { navController.navigate(Rutas.AdminDashboard.ruta) }) {
-                    Text("Entrar como Administrador")
-                }
-            }
         }
 
         // 2. Pantalla de Lista de Ciudadano
         composable(route = Rutas.CitizenList.ruta) {
-            //TODO PONER LA RUTA
-            Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                Text("Mis Reportes (Ciudadano)")
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { navController.navigate(Rutas.CreateReport.ruta) }) {
-                    Text("Crear Nuevo Reporte")
-                }
-            }
+            CitizenListScreen(navController = navController)
         }
 
-        // 3. Pantalla para Crear Reporte
+        // 3. Pantalla para Crear Reporte EJEMPLO BASICO
         composable(route = Rutas.CreateReport.ruta) {
             //TODO PONER LA RUTA
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
@@ -76,7 +57,7 @@ fun AppNavigation() {
             }
         }
 
-        // 4. Pantalla de Dashboard Administrador
+        // 4. Pantalla de Dashboard Administrador EJEMPLO BASICO
         composable(route = Rutas.AdminDashboard.ruta) {
             //TODO PONER LA RUTA
             Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
@@ -89,7 +70,7 @@ fun AppNavigation() {
             }
         }
 
-        // 5. Pantalla de Detalle de Reporte (Recibe argumentos)
+        // 5. Pantalla de Detalle de Reporte (Recibe argumentos) EJEMPLO BASICO
         composable(
             route = Rutas.ReportDetail.ruta,
             arguments = listOf(navArgument("reportId") { type = NavType.StringType })
