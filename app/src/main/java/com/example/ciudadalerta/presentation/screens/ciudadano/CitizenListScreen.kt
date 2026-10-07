@@ -21,7 +21,7 @@ import com.example.ciudadalerta.presentation.navigation.Rutas
  *
  * Modelo de datos temporal para representar un reporte en la interfaz.
  * Más adelante esto será reemplazado por la entidad real del dominio y base de datos.
- * @author Erick Omar Perez Gonzalez
+ * @author NOMBRE
  */
 data class ReporteDummy(
     val id: String,
@@ -36,7 +36,7 @@ data class ReporteDummy(
  * Pantalla que muestra el historial de reportes creados por el ciudadano.
  * Utiliza un Scaffold para contener la barra superior, el botón de creación (FAB)
  * y una LazyColumn para renderizar la lista de incidencias.
- * @author Erick Omar Perez Gonzalez
+ * @author NOMBRE
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,7 +89,7 @@ fun CitizenListScreen(navController: NavController) {
 /**
  *
  * Componente visual (Tarjeta) que representa un elemento individual dentro de la lista de reportes.
- * @author Erick Omar Perez Gonzalez
+ * @author NOMBRE
  */
 @Composable
 fun ReporteItem(reporte: ReporteDummy) {

@@ -40,7 +40,8 @@ import com.example.ciudadalerta.presentation.navigation.Rutas
  * Pantalla de inicio de sesión de la aplicación "Ciudad Alerta".
  * Contiene campos para correo electrónico y contraseña.
  * Por el momento, el botón de inicio de sesión navega directamente al flujo del ciudadano.
- * @author Erick Omar Perez Gonzalez
+ *
+ * @author NOMBRE
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
