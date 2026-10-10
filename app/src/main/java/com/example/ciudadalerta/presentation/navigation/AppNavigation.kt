@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListScreen
+import com.example.ciudadalerta.presentation.screens.ciudadano.CreateReportScreen
 import com.example.ciudadalerta.presentation.screens.login.LoginScreen
 
 
@@ -47,14 +48,7 @@ fun AppNavigation() {
 
         // 3. Pantalla para Crear Reporte EJEMPLO BASICO
         composable(route = Rutas.CreateReport.ruta) {
-            //TODO PONER LA RUTA
-            Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                Text("Formulario de Nuevo Reporte")
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { navController.popBackStack() }) {
-                    Text("Guardar y Volver") // popBackStack() destruye esta pantalla y vuelve a la anterior
-                }
-            }
+            CreateReportScreen(navController = navController)
         }
 
         // 4. Pantalla de Dashboard Administrador EJEMPLO BASICO
