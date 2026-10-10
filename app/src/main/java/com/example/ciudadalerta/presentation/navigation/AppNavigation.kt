@@ -4,17 +4,26 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.ciudadalerta.data.local.CiudadAlertaDatabase
+import com.example.ciudadalerta.data.local.entity.UsuarioEntity
+import com.example.ciudadalerta.data.repository.UsuarioRepositoryImpl
 import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListScreen
 import com.example.ciudadalerta.presentation.screens.ciudadano.CreateReportScreen
 import com.example.ciudadalerta.presentation.screens.login.LoginScreen
+import com.example.ciudadalerta.presentation.screens.login.LoginViewModel
 
 
 /**
@@ -29,6 +38,44 @@ fun AppNavigation() {
     // El NavController es el objeto que nos permite cambiar de pantalla
     val navController = rememberNavController()
 
+    // Obtenemos el contexto de la aplicación, necesario para inicializar Room
+    val context = LocalContext.current
+
+    // 1. Instanciamos la Base de Datos y el Repositorio de Usuarios
+    val database = CiudadAlertaDatabase.getDatabase(context)
+    val usuarioRepository = UsuarioRepositoryImpl(database.usuarioDao())
+
+    // 2. Creamos un Factory para poder inyectar el repositorio al LoginViewModel
+    val loginViewModelFactory = object : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return LoginViewModel(usuarioRepository) as T
+        }
+    }
+
+    // --- NUEVO: INSERTAR USUARIOS DE PRUEBA ---
+
+            LaunchedEffect(Unit) {
+                // 1. Creamos un usuario Administrador
+                usuarioRepository.registrarUsuario(
+                    UsuarioEntity(
+                        correo = "admin@test.com",
+                        contrasena = "12345",
+                        rol = "Administrador"
+                    )
+                )
+
+                // 2. Creamos un usuario Ciudadano
+                usuarioRepository.registrarUsuario(
+                    UsuarioEntity(
+                        correo = "ciudadano@test.com",
+                        contrasena = "12345",
+                        rol = "Ciudadano"
+                    )
+                )
+            }
+    // ------------------------------------------
+
     // El NavHost es el contenedor de las pantallas.
     // Empezaremos en la pantalla de Login.
     NavHost(
@@ -38,7 +85,10 @@ fun AppNavigation() {
 
         // 1. Pantalla de Login
         composable(route = Rutas.Login.ruta) {
-            LoginScreen(navController = navController)
+            val loginViewModel: LoginViewModel = viewModel(factory = loginViewModelFactory)
+            LoginScreen(navController = navController,
+                viewModel = loginViewModel
+                )
         }
 
         // 2. Pantalla de Lista de Ciudadano

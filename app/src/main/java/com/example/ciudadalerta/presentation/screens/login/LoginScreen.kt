@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +22,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,11 +48,31 @@ import com.example.ciudadalerta.presentation.navigation.Rutas
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(
+    navController: NavController,
+    viewModel: LoginViewModel
+) {
     // Variables de estado para los campos de texto
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val loginState by viewModel.loginState.collectAsState()
+
     var passwordVisible by remember { mutableStateOf(false) }
+
+    // Reaccionar al estado de éxito (Navegación)
+    LaunchedEffect(loginState) {
+        if (loginState is LoginState.Success) {
+            val usuario = (loginState as LoginState.Success).usuario
+
+            // Dependiendo del rol, lo mandamos a una pantalla u otra
+            val rutaDestino =
+                if (usuario.rol == "Administrador") Rutas.AdminDashboard.ruta else Rutas.CitizenList.ruta
+
+            navController.navigate(rutaDestino) {
+                popUpTo(Rutas.Login.ruta) { inclusive = true }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -70,9 +93,14 @@ fun LoginScreen(navController: NavController) {
         // Campo de Correo Electrónico
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = { viewModel.onEmailChange(it) },
             label = { Text("Correo Electrónico") },
-            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email Icon") },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = "Email Icon"
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
@@ -82,12 +110,19 @@ fun LoginScreen(navController: NavController) {
         // Campo de Contraseña
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { viewModel.onPasswordChange(it) },
             label = { Text("Contraseña") },
-            leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "Lock Icon") },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = "Lock Icon"
+                )
+            },
             trailingIcon = {
-                val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
+                val image =
+                    if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                val description =
+                    if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
 
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(imageVector = image, contentDescription = description)
@@ -100,21 +135,29 @@ fun LoginScreen(navController: NavController) {
             singleLine = true
         )
 
-        // Botón de Iniciar Sesión
-        Button(
-            onClick = {
-                // Navegación directa al listado de ciudadano.
-                // popUpTo asegura que si damos "Atrás", no volvamos a la pantalla de login.
-                navController.navigate(Rutas.CitizenList.ruta) {
-                    popUpTo(Rutas.Login.ruta) { inclusive = true }
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text("Iniciar Sesión", fontSize = 16.sp)
+        // Mostrar errores si existen
+        if (loginState is LoginState.Error) {
+            Text(
+                text = (loginState as LoginState.Error).message,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
         }
+
+        // Botón de Iniciar Sesión
+        if (loginState is LoginState.Loading) {
+            CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+        } else {
+            Button(
+                onClick = { viewModel.login() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text("Iniciar Sesión", fontSize = 16.sp)
+            }
+        }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 

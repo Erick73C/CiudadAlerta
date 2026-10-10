@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -58,4 +58,6 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     // Procesador de anotaciones usando KSP
+    ksp(libs.room.compiler)
+
 }
