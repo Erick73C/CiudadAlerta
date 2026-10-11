@@ -9,6 +9,8 @@ sealed class Rutas(val ruta: String) {
     // Pantalla de inicio de sesión
     object Login : Rutas("login_screen")
 
+    object Register : Rutas("register_screen")
+
     // Flujo del Ciudadano
     object CitizenList : Rutas("citizen_list_screen")
     object CreateReport : Rutas("create_report_screen")

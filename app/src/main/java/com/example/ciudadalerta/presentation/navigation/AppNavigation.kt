@@ -24,6 +24,10 @@ import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListScreen
 import com.example.ciudadalerta.presentation.screens.ciudadano.CreateReportScreen
 import com.example.ciudadalerta.presentation.screens.login.LoginScreen
 import com.example.ciudadalerta.presentation.screens.login.LoginViewModel
+import com.example.ciudadalerta.presentation.screens.login.LoginViewModelFactory
+import com.example.ciudadalerta.presentation.screens.registrer.RegisterScreen
+import com.example.ciudadalerta.presentation.screens.registrer.RegisterViewModel
+import com.example.ciudadalerta.presentation.screens.registrer.RegisterViewModelFactory
 
 
 /**
@@ -44,37 +48,16 @@ fun AppNavigation() {
     // 1. Instanciamos la Base de Datos y el Repositorio de Usuarios
     val database = CiudadAlertaDatabase.getDatabase(context)
     val usuarioRepository = UsuarioRepositoryImpl(database.usuarioDao())
+    val registrorepository = UsuarioRepositoryImpl(database.usuarioDao())
 
     // 2. Creamos un Factory para poder inyectar el repositorio al LoginViewModel
-    val loginViewModelFactory = object : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return LoginViewModel(usuarioRepository) as T
-        }
-    }
+    val loginViewModel: LoginViewModel = viewModel(
+        factory = LoginViewModelFactory(usuarioRepository)
+    )
 
-    // --- NUEVO: INSERTAR USUARIOS DE PRUEBA ---
-
-            LaunchedEffect(Unit) {
-                // 1. Creamos un usuario Administrador
-                usuarioRepository.registrarUsuario(
-                    UsuarioEntity(
-                        correo = "admin@test.com",
-                        contrasena = "12345",
-                        rol = "Administrador"
-                    )
-                )
-
-                // 2. Creamos un usuario Ciudadano
-                usuarioRepository.registrarUsuario(
-                    UsuarioEntity(
-                        correo = "ciudadano@test.com",
-                        contrasena = "12345",
-                        rol = "Ciudadano"
-                    )
-                )
-            }
-    // ------------------------------------------
+    val registerViewModel: RegisterViewModel = viewModel(
+        factory = RegisterViewModelFactory(registrorepository)
+    )
 
     // El NavHost es el contenedor de las pantallas.
     // Empezaremos en la pantalla de Login.
@@ -83,12 +66,27 @@ fun AppNavigation() {
         startDestination = Rutas.Login.ruta
     ) {
 
-        // 1. Pantalla de Login
+        // 0. Pantalla de Login
         composable(route = Rutas.Login.ruta) {
-            val loginViewModel: LoginViewModel = viewModel(factory = loginViewModelFactory)
-            LoginScreen(navController = navController,
-                viewModel = loginViewModel
-                )
+            LoginScreen(
+                navController = navController,
+                viewModel = loginViewModel,
+                onNavigateToRegister = {
+                    navController.navigate(Rutas.Register.ruta)
+                }
+            )
+        }
+
+        composable(route = Rutas.Register.ruta) {
+            RegisterScreen(
+                viewModel = registerViewModel,
+                onRegisterSuccess = {
+                    navController.popBackStack()
+                },
+                onBackToLogin = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         // 2. Pantalla de Lista de Ciudadano

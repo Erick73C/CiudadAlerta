@@ -50,7 +50,8 @@ import com.example.ciudadalerta.presentation.navigation.Rutas
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: LoginViewModel
+    viewModel: LoginViewModel,
+    onNavigateToRegister: () -> Unit
 ) {
     // Variables de estado para los campos de texto
     val email by viewModel.email.collectAsState()
@@ -162,7 +163,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Botón de texto para recuperar contraseña (visual por ahora)
-        TextButton(onClick = { /* Pendiente */ }) {
+        TextButton(onClick = onNavigateToRegister) {
             Text("¿Olvidaste tu contraseña?")
         }
     }
