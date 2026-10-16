@@ -5,6 +5,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,10 +21,14 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.ciudadalerta.data.local.CiudadAlertaDatabase
 import com.example.ciudadalerta.data.local.entity.UsuarioEntity
+import com.example.ciudadalerta.data.repository.ReporteRepositoryImpl
 import com.example.ciudadalerta.data.repository.UsuarioRepositoryImpl
 import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListScreen
+import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListViewModel
+import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListViewModelFactory
 import com.example.ciudadalerta.presentation.screens.ciudadano.CreateReportScreen
 import com.example.ciudadalerta.presentation.screens.login.LoginScreen
+import com.example.ciudadalerta.presentation.screens.login.LoginState
 import com.example.ciudadalerta.presentation.screens.login.LoginViewModel
 import com.example.ciudadalerta.presentation.screens.login.LoginViewModelFactory
 import com.example.ciudadalerta.presentation.screens.registrer.RegisterScreen
@@ -49,6 +55,7 @@ fun AppNavigation() {
     val database = CiudadAlertaDatabase.getDatabase(context)
     val usuarioRepository = UsuarioRepositoryImpl(database.usuarioDao())
     val registrorepository = UsuarioRepositoryImpl(database.usuarioDao())
+    val reporteRepository = ReporteRepositoryImpl(database.reporteDao())
 
     // 2. Creamos un Factory para poder inyectar el repositorio al LoginViewModel
     val loginViewModel: LoginViewModel = viewModel(
@@ -91,7 +98,25 @@ fun AppNavigation() {
 
         // 2. Pantalla de Lista de Ciudadano
         composable(route = Rutas.CitizenList.ruta) {
-            CitizenListScreen(navController = navController)
+            // El usuario logueado vive en el LoginViewModel
+            val loginState by loginViewModel.loginState.collectAsState()
+            val usuario = (loginState as? LoginState.Success)?.usuario
+
+            if (usuario != null) {
+                val citizenListViewModel: CitizenListViewModel = viewModel(
+                    key = "citizen_${usuario.id}",
+                    factory = CitizenListViewModelFactory(
+                        reporteRepository,
+                        usuario.nombre,
+                        usuario.correo,
+                        usuario.id
+                    )
+                )
+                CitizenListScreen(
+                    navController = navController,
+                    viewModel = citizenListViewModel
+                )
+            }
         }
 
         // 3. Pantalla para Crear Reporte EJEMPLO BASICO

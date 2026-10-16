@@ -11,4 +11,6 @@ import com.example.ciudadalerta.data.local.entity.UsuarioEntity
 interface UsuarioRepository {
     suspend fun registrarUsuario(usuario: UsuarioEntity)
     suspend fun login(correo: String, contrasena: String): UsuarioEntity?
+    suspend fun obtenerUsuarioPorId(id: Int): UsuarioEntity?
+    suspend fun obtenerNombreUsuarioPorId(id: Int): String?
 }

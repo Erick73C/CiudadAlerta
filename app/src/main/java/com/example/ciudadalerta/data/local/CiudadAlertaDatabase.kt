@@ -18,7 +18,7 @@ import com.example.ciudadalerta.data.local.entity.UsuarioEntity
  */
 @Database(
     entities = [UsuarioEntity::class, ReporteEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class CiudadAlertaDatabase : RoomDatabase() {
@@ -36,7 +36,9 @@ abstract class CiudadAlertaDatabase : RoomDatabase() {
                     context.applicationContext,
                     CiudadAlertaDatabase::class.java,
                     "ciudad_alerta_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration(dropAllTables = true)
+                    .build()
                 INSTANCE = instance
                 instance
             }

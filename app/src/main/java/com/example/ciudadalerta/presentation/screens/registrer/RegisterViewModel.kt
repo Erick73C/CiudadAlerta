@@ -66,6 +66,7 @@ class RegisterViewModel(
             try {
                 // Se mapea la UI al objeto de Dominio / Entidad
                 val nuevoUsuario = UsuarioEntity(
+                    nombre = currentState.nombre.trim(),
                     correo = emailLimpio,
                     contrasena = passwordLimpia,
                     rol = "Ciudadano"

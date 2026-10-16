@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.ciudadalerta.data.local.entity.UsuarioEntity
-import kotlinx.coroutines.flow.Flow
 
 
 /**
@@ -22,4 +21,12 @@ interface UsuarioDao {
     // Consulta para el Login: Busca un usuario que coincida con correo y contraseña
     @Query("SELECT * FROM usuarios WHERE correo = :correo AND contrasena = :contrasena LIMIT 1")
     suspend fun login(correo: String, contrasena: String): UsuarioEntity?
+
+    // Busca un usuario por su ID
+    @Query("SELECT * FROM usuarios WHERE id = :id LIMIT 1")
+    suspend fun obtenerUsuarioPorId(id: Int): UsuarioEntity?
+
+    // Obtiene únicamente el nombre de un usuario por su ID
+    @Query("SELECT nombre FROM usuarios WHERE id = :id LIMIT 1")
+    suspend fun obtenerNombreUsuarioPorId(id: Int): String?
 }

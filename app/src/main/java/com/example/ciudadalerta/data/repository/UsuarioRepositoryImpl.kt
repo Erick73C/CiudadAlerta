@@ -22,4 +22,12 @@ class UsuarioRepositoryImpl(
     override suspend fun login(correo: String, contrasena: String): UsuarioEntity? {
         return usuarioDao.login(correo, contrasena)
     }
+
+    override suspend fun obtenerUsuarioPorId(id: Int): UsuarioEntity? {
+        return usuarioDao.obtenerUsuarioPorId(id)
+    }
+
+    override suspend fun obtenerNombreUsuarioPorId(id: Int): String? {
+        return usuarioDao.obtenerNombreUsuarioPorId(id)
+    }
 }

@@ -1,35 +1,24 @@
 package com.example.ciudadalerta.presentation.screens.ciudadano
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ciudadalerta.presentation.navigation.Rutas
 
-/**
- *
- * Modelo de datos temporal para representar un reporte en la interfaz.
- * Más adelante esto será reemplazado por la entidad real del dominio y base de datos.
- * @author NOMBRE
- */
-data class ReporteDummy(
-    val id: String,
-    val titulo: String,
-    val descripcion: String,
-    val estatus: String,
-    val fecha: String
-)
 
 /**
  *
@@ -40,20 +29,34 @@ data class ReporteDummy(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CitizenListScreen(navController: NavController) {
-
-    // Lista de reportes harcodeados (Dummy Data) para ver el diseño
-    val listaReportes = listOf(
-        ReporteDummy("1", "Bache profundo", "Bache en el carril derecho que daña los neumáticos.", "Pendiente", "06/10/2026"),
-        ReporteDummy("2", "Luminaria fundida", "Poste de luz sin funcionar desde hace 3 días en el parque.", "En Revisión", "04/10/2026"),
-        ReporteDummy("3", "Fuga de agua", "Fuga constante de agua potable en la banqueta.", "Resuelto", "01/10/2026"),
-        ReporteDummy("4", "Semáforo descompuesto", "Semáforo parpadeando en rojo todo el día.", "Pendiente", "28/09/2026")
-    )
+fun CitizenListScreen(
+    navController: NavController,
+    viewModel: CitizenListViewModel
+) {
+    val nombreUsuario by viewModel.nombreUsuario.collectAsState()
+    val listaReportes by viewModel.reportes.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mis Reportes", fontWeight = FontWeight.Bold) },
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Usuario"
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                text = nombreUsuario,
+                                fontSize = 12.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text("Mis Reportes", fontWeight = FontWeight.Bold)
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
@@ -70,17 +73,25 @@ fun CitizenListScreen(navController: NavController) {
             }
         }
     ) { paddingValues ->
-        // Contenedor principal de la lista
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
-        ) {
-            items(listaReportes) { reporte ->
-                ReporteItem(reporte = reporte)
+        if (listaReportes.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Aún no tienes reportes. Toca + para crear uno.")
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                items(listaReportes, key = { it.id }) { reporte ->
+                    ReporteItem(reporte = reporte)
+                }
             }
         }
     }
