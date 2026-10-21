@@ -15,7 +15,7 @@ import com.example.ciudadalerta.data.local.entity.UsuarioEntity
 @Dao
 interface UsuarioDao {
     // Inserta un nuevo usuario (Registro)
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun registrarUsuario(usuario: UsuarioEntity)
 
     // Consulta para el Login: Busca un usuario que coincida con correo y contraseña

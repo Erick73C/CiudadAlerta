@@ -1,5 +1,6 @@
 package com.example.ciudadalerta.presentation.screens.registrer
 
+import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -78,7 +79,13 @@ class RegisterViewModel(
                 Log.d(TAG, "=== REGISTRO EXITOSO EN REPOSITORIO ===")
                 _uiState.update { it.copy(isLoading = false, isSuccess = true) }
 
-            } catch (e: Exception) {
+            } catch (e: SQLiteConstraintException) {
+                Log.w(TAG, "Correo duplicado: $emailLimpio")
+                _uiState.update {
+                    it.copy(isLoading = false, errorMessage = "Este correo ya está registrado")
+                }
+            }
+            catch (e: Exception) {
                 Log.e(TAG, "EXCEPCIÓN EN REGISTRO: ${e.message}", e)
                 _uiState.update {
                     it.copy(
