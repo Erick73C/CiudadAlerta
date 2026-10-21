@@ -20,11 +20,11 @@ class LoginViewModel(
 ) : ViewModel() {
 
     // Estado del correo electrónico
-    private val _email = MutableStateFlow("")
+    private val _email = MutableStateFlow("")//Es el estado inicial del email que llega desde la caja de texto de LoginScreen
     val email: StateFlow<String> = _email.asStateFlow()
 
     // Estado de la contraseña
-    private val _password = MutableStateFlow("")
+    private val _password = MutableStateFlow("")//Es el estado inicial del password que llega desde la caja de texto de LoginScreen
     val password: StateFlow<String> = _password.asStateFlow()
 
     // Estado general de la pantalla (Loading, Success, Error)
@@ -41,7 +41,11 @@ class LoginViewModel(
 
     fun login() {
         // Validación básica
-        if (_email.value.isBlank() || _password.value.isBlank()) {
+
+        val emailLimpio = _email.value.trim().lowercase()
+        val passwordLimpia = _password.value.trim()
+
+        if (emailLimpio.isBlank() || passwordLimpia.isBlank()) {
             _loginState.value = LoginState.Error("Por favor, llena todos los campos.")
             return
         }
@@ -53,7 +57,7 @@ class LoginViewModel(
         viewModelScope.launch {
             try {
                 // Consultamos la base de datos a través del repositorio
-                val usuario = repository.login(_email.value, _password.value)
+                val usuario = repository.login(emailLimpio, passwordLimpia)
 
                 if (usuario != null) {
                     // Si el usuario existe, el login es exitoso
