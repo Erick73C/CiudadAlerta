@@ -59,5 +59,6 @@ dependencies {
     implementation(libs.room.ktx)
     // Procesador de anotaciones usando KSP
     ksp(libs.room.compiler)
-
+    //UBICACION
+    implementation(libs.play.services.location)
 }

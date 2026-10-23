@@ -20,5 +20,8 @@ data class ReporteEntity(
     val requiereAtencionInmediata: Boolean,
     val estatus: String = "Pendiente",
     val estatusSincronizacion: String = "LOCAL",
-    val usuarioId: Int
+    val usuarioId: Int,
+    val latitud: Double? = null,
+    val longitud: Double? = null,
+    val fotoPath: String? = null
 )
