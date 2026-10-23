@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.ciudadalerta.presentation.navigation.AppNavigation
+import com.example.ciudadalerta.presentation.permissions.PermissionGate
 import com.example.ciudadalerta.ui.theme.CiudadAlertaTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,8 +21,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CiudadAlertaTheme {
-                    //Login de inicio
-                AppNavigation()
+                PermissionGate {
+                    AppNavigation()
+                }
             }
         }
     }

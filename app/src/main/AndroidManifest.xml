@@ -2,6 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Cámara para la foto del reporte -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Ubicación (RF-03). Fine incluye la precisión de Coarse -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Se usará en la sincronización (RF-05) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- La cámara no es obligatoria: la app sigue instalable sin ella -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
