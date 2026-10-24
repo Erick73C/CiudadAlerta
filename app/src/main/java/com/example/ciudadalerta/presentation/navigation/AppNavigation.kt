@@ -4,15 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -20,13 +18,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.ciudadalerta.data.local.CiudadAlertaDatabase
-import com.example.ciudadalerta.data.local.entity.UsuarioEntity
 import com.example.ciudadalerta.data.repository.ReporteRepositoryImpl
 import com.example.ciudadalerta.data.repository.UsuarioRepositoryImpl
+import com.example.ciudadalerta.domain.location.LocationProviderImpl
+import com.example.ciudadalerta.domain.storage.FotoStorageImpl
 import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListScreen
 import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListViewModel
 import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListViewModelFactory
-import com.example.ciudadalerta.presentation.screens.ciudadano.CreateReportScreen
+import com.example.ciudadalerta.presentation.screens.reports.CreateReportScreen
 import com.example.ciudadalerta.presentation.screens.login.LoginScreen
 import com.example.ciudadalerta.presentation.screens.login.LoginState
 import com.example.ciudadalerta.presentation.screens.login.LoginViewModel
@@ -34,6 +33,8 @@ import com.example.ciudadalerta.presentation.screens.login.LoginViewModelFactory
 import com.example.ciudadalerta.presentation.screens.registrer.RegisterScreen
 import com.example.ciudadalerta.presentation.screens.registrer.RegisterViewModel
 import com.example.ciudadalerta.presentation.screens.registrer.RegisterViewModelFactory
+import com.example.ciudadalerta.presentation.screens.reports.CreateReportViewModel
+import com.example.ciudadalerta.presentation.screens.reports.CreateReportViewModelFactory
 
 
 /**
@@ -56,6 +57,9 @@ fun AppNavigation() {
     val usuarioRepository = UsuarioRepositoryImpl(database.usuarioDao())
     val registrorepository = UsuarioRepositoryImpl(database.usuarioDao())
     val reporteRepository = ReporteRepositoryImpl(database.reporteDao())
+
+    val fotoStorage = remember { FotoStorageImpl(context.applicationContext) }
+    val locationProvider = remember { LocationProviderImpl(context.applicationContext) }
 
     // 2. Creamos un Factory para poder inyectar el repositorio al LoginViewModel
     val loginViewModel: LoginViewModel = viewModel(
@@ -121,7 +125,20 @@ fun AppNavigation() {
 
         // 3. Pantalla para Crear Reporte EJEMPLO BASICO
         composable(route = Rutas.CreateReport.ruta) {
-            CreateReportScreen(navController = navController)
+            val loginState by loginViewModel.loginState.collectAsState()
+            val usuario = (loginState as? LoginState.Success)?.usuario
+
+            if (usuario != null) {
+                val createReportViewModel: CreateReportViewModel = viewModel(
+                    factory = CreateReportViewModelFactory(
+                        reporteRepository, locationProvider, fotoStorage, usuario.id
+                    )
+                )
+                CreateReportScreen(
+                    navController = navController,
+                    viewModel = createReportViewModel
+                )
+            }
         }
 
         // 4. Pantalla de Dashboard Administrador EJEMPLO BASICO
