@@ -72,8 +72,10 @@ class LoginViewModel(
         }
     }
 
-    // Para limpiar el estado después de mostrar un error
-    fun resetState() {
+    // Cierra la sesión: limpia el usuario logueado y los campos del formulario
+    fun cerrarSesion() {
+        _email.value = ""
+        _password.value = ""
         _loginState.value = LoginState.Idle
     }
 }
