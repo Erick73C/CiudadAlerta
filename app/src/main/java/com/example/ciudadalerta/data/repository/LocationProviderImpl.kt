@@ -1,4 +1,4 @@
-package com.example.ciudadalerta.domain.location
+package com.example.ciudadalerta.data.repository
 
 import android.Manifest
 import android.annotation.SuppressLint

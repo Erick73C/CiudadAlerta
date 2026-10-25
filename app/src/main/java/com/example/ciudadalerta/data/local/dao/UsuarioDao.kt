@@ -29,4 +29,8 @@ interface UsuarioDao {
     // Obtiene únicamente el nombre de un usuario por su ID
     @Query("SELECT nombre FROM usuarios WHERE id = :id LIMIT 1")
     suspend fun obtenerNombreUsuarioPorId(id: Int): String?
+
+    // Inserta solo si el correo no existe (índice único en correo). Se usa para el admin fijo.
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertarSiNoExiste(usuario: UsuarioEntity)
 }

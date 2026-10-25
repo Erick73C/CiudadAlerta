@@ -1,5 +1,6 @@
 package com.example.ciudadalerta.domain.repository
 
+import com.example.ciudadalerta.data.local.entity.ReporteConUsuario
 import com.example.ciudadalerta.data.local.entity.ReporteEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -12,4 +13,6 @@ interface ReporteRepository {
     suspend fun insertarReporte(reporte: ReporteEntity)
     fun obtenerTodosLosReportes(): Flow<List<ReporteEntity>>
     fun obtenerReportesPorUsuario(usuarioId: Int): Flow<List<ReporteEntity>>
+
+    fun obtenerReportesConUsuario(): Flow<List<ReporteConUsuario>>
 }

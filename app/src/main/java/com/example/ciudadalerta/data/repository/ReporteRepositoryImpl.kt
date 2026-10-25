@@ -1,6 +1,7 @@
 package com.example.ciudadalerta.data.repository
 
 import com.example.ciudadalerta.data.local.dao.ReporteDao
+import com.example.ciudadalerta.data.local.entity.ReporteConUsuario
 import com.example.ciudadalerta.data.local.entity.ReporteEntity
 import com.example.ciudadalerta.domain.repository.ReporteRepository
 import kotlinx.coroutines.flow.Flow
@@ -27,5 +28,9 @@ class ReporteRepositoryImpl(
 
     override fun obtenerReportesPorUsuario(usuarioId: Int): Flow<List<ReporteEntity>> {
         return reporteDao.obtenerReportesPorUsuario(usuarioId)
+    }
+
+    override fun obtenerReportesConUsuario(): Flow<List<ReporteConUsuario>> {
+        return reporteDao.obtenerReportesConUsuario()
     }
 }

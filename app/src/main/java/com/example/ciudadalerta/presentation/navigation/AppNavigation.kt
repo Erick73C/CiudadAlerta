@@ -20,8 +20,8 @@ import androidx.navigation.navArgument
 import com.example.ciudadalerta.data.local.CiudadAlertaDatabase
 import com.example.ciudadalerta.data.repository.ReporteRepositoryImpl
 import com.example.ciudadalerta.data.repository.UsuarioRepositoryImpl
-import com.example.ciudadalerta.domain.location.LocationProviderImpl
-import com.example.ciudadalerta.domain.storage.FotoStorageImpl
+import com.example.ciudadalerta.data.repository.LocationProviderImpl
+import com.example.ciudadalerta.data.repository.FotoStorageImpl
 import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListScreen
 import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListViewModel
 import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListViewModelFactory

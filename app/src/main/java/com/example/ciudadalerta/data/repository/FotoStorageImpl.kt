@@ -1,4 +1,4 @@
-package com.example.ciudadalerta.domain.storage
+package com.example.ciudadalerta.data.repository
 
 import android.content.Context
 import androidx.core.content.FileProvider
