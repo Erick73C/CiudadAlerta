@@ -15,4 +15,8 @@ interface ReporteRepository {
     fun obtenerReportesPorUsuario(usuarioId: Int): Flow<List<ReporteEntity>>
 
     fun obtenerReportesConUsuario(): Flow<List<ReporteConUsuario>>
+
+    suspend fun actualizarEstatus(id: Int, estatus: String)
+
+    fun obtenerReporteConUsuario(id: Int): Flow<ReporteConUsuario?>
 }

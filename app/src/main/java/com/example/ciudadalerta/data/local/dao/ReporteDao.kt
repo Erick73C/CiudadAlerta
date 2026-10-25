@@ -38,4 +38,20 @@ interface ReporteDao {
     """
     )
     fun obtenerReportesConUsuario(): Flow<List<ReporteConUsuario>>
+
+    // Un reporte con el nombre de quien lo creó (Para el detalle del Administrador)
+    @Query(
+        """
+    SELECT r.*, u.nombre AS nombreUsuario
+    FROM reportes r
+    LEFT JOIN usuarios u ON u.id = r.usuarioId
+    WHERE r.id = :id
+    LIMIT 1
+    """
+    )
+    fun obtenerReporteConUsuario(id: Int): Flow<ReporteConUsuario?>
+
+    @Query("UPDATE reportes SET estatus = :estatus WHERE id = :id")
+    suspend fun actualizarEstatus(id: Int, estatus: String)
+
 }

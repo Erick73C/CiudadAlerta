@@ -33,4 +33,12 @@ class ReporteRepositoryImpl(
     override fun obtenerReportesConUsuario(): Flow<List<ReporteConUsuario>> {
         return reporteDao.obtenerReportesConUsuario()
     }
+
+    override suspend fun actualizarEstatus(id: Int, estatus: String) {
+        reporteDao.actualizarEstatus(id, estatus)
+    }
+
+    override fun obtenerReporteConUsuario(id: Int): Flow<ReporteConUsuario?> {
+        return reporteDao.obtenerReporteConUsuario(id)
+    }
 }

@@ -25,6 +25,9 @@ import com.example.ciudadalerta.data.repository.FotoStorageImpl
 import com.example.ciudadalerta.presentation.screens.administrador.AdminDashboardScreen
 import com.example.ciudadalerta.presentation.screens.administrador.AdminDashboardViewModel
 import com.example.ciudadalerta.presentation.screens.administrador.AdminDashboardViewModelFactory
+import com.example.ciudadalerta.presentation.screens.administrador.ReportDetailScreen
+import com.example.ciudadalerta.presentation.screens.administrador.ReportDetailViewModel
+import com.example.ciudadalerta.presentation.screens.administrador.ReportDetailViewModelFactory
 import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListScreen
 import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListViewModel
 import com.example.ciudadalerta.presentation.screens.ciudadano.CitizenListViewModelFactory
@@ -170,18 +173,23 @@ fun AppNavigation() {
         }
 
         // 5. Pantalla de Detalle de Reporte (Recibe argumentos) EJEMPLO BASICO
+        // 5. Pantalla de Detalle de Reporte (solo Administrador)
         composable(
             route = Rutas.ReportDetail.ruta,
             arguments = listOf(navArgument("reportId") { type = NavType.StringType })
         ) { backStackEntry ->
-            // Recuperamos el ID que pasamos en la ruta
-            val reportId = backStackEntry.arguments?.getString("reportId") ?: "ID desconocido"
-            Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                Text("Detalle del Reporte: $reportId")
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { navController.popBackStack() }) {
-                    Text("Volver")
-                }
+            val reportId = backStackEntry.arguments?.getString("reportId")?.toIntOrNull()
+            val loginState by loginViewModel.loginState.collectAsState()
+            val usuario = (loginState as? LoginState.Success)?.usuario
+
+            if (usuario != null && usuario.rol == "Administrador" && reportId != null) {
+                val detailViewModel: ReportDetailViewModel = viewModel(
+                    factory = ReportDetailViewModelFactory(reporteRepository, reportId)
+                )
+                ReportDetailScreen(
+                    navController = navController,
+                    viewModel = detailViewModel
+                )
             }
         }
     }
