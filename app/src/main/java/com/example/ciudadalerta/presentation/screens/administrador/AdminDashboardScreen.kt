@@ -160,7 +160,7 @@ private fun AdminReporteItem(reporte: AdminReporteUi, onClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Por: ${reporte.nombreUsuario} · ${reporte.categoria} · ${reporte.hora}",
+                    text = "Por: ${reporte.nombreUsuario} · ${reporte.categoria} · ${reporte.fecha}",
                     fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

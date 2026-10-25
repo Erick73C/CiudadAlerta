@@ -23,5 +23,6 @@ data class ReporteEntity(
     val usuarioId: Int,
     val latitud: Double? = null,
     val longitud: Double? = null,
-    val fotoPath: String? = null
+    val fotoPath: String? = null,
+    val fechaCreacion: Long = System.currentTimeMillis()
 )

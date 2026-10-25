@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ciudadalerta.data.local.entity.ReporteConUsuario
 import com.example.ciudadalerta.domain.repository.ReporteRepository
+import com.example.ciudadalerta.presentation.util.aFechaHora
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -53,7 +54,7 @@ private fun ReporteConUsuario.toUi() = AdminReporteUi(
     descripcion = reporte.descripcion,
     categoria = reporte.categoria,
     estatus = reporte.estatus,
-    hora = reporte.hora,
+    fecha = reporte.fechaCreacion.aFechaHora(),
     nombreUsuario = nombreUsuario ?: "Usuario desconocido",
     urgente = reporte.requiereAtencionInmediata
 )

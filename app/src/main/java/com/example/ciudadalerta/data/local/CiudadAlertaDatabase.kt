@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
  */
 @Database(
     entities = [UsuarioEntity::class, ReporteEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class CiudadAlertaDatabase : RoomDatabase() {

@@ -10,7 +10,7 @@ data class AdminReporteUi(
     val descripcion: String,
     val categoria: String,
     val estatus: String,
-    val hora: String,
+    val fecha: String,
     val nombreUsuario: String,
     val urgente: Boolean
 )
