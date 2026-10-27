@@ -64,4 +64,10 @@ dependencies {
     implementation(libs.play.services.location)
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    //RED (SUPABASE)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
+    implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.kotlinx.serialization.json)
 }
