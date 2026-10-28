@@ -8,4 +8,7 @@ package com.example.ciudadalerta.data.remote
 object SupabaseConfig {
     const val URL = "https://kadnekqgnhofedvwbwtz.supabase.co"
     const val PUBLISHABLE_KEY = "sb_publishable__LT00-NaVzV1wkx5ZKHugg_aegGvu-O"
+
+    // Nombre del bucket de Storage donde se guardan las fotos de los reportes
+    const val BUCKET_FOTOS = "fotos-reportes"
 }
