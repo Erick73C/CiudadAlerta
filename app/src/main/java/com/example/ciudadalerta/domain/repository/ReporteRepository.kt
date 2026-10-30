@@ -12,11 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface ReporteRepository {
     suspend fun insertarReporte(reporte: ReporteEntity)
     fun obtenerTodosLosReportes(): Flow<List<ReporteEntity>>
-    fun obtenerReportesPorUsuario(usuarioId: Int): Flow<List<ReporteEntity>>
-
-    fun obtenerReportesConUsuario(): Flow<List<ReporteConUsuario>>
-
-    suspend fun actualizarEstatus(id: Int, estatus: String)
-
-    fun obtenerReporteConUsuario(id: Int): Flow<ReporteConUsuario?>
+    fun obtenerReportesPorUsuario(usuarioId: String): Flow<List<ReporteEntity>>
+    fun obtenerReportePorId(id: String): Flow<ReporteEntity?>
+    suspend fun actualizarEstatus(id: String, estatus: String)
 }

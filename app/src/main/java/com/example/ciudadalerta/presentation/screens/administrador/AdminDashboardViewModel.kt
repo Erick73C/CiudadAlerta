@@ -3,7 +3,7 @@ package com.example.ciudadalerta.presentation.screens.administrador
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.ciudadalerta.data.local.entity.ReporteConUsuario
+import com.example.ciudadalerta.data.local.entity.ReporteEntity
 import com.example.ciudadalerta.domain.repository.ReporteRepository
 import com.example.ciudadalerta.presentation.util.aFechaHora
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.stateIn
 /**
  * ViewModel del panel del administrador: combina todos los reportes de Room
  * con el filtro de estatus elegido y calcula los conteos.
- *
- * @author YO
  */
 class AdminDashboardViewModel(
     reporteRepository: ReporteRepository
@@ -25,7 +23,7 @@ class AdminDashboardViewModel(
     private val filtro = MutableStateFlow(FILTRO_TODOS)
 
     val uiState: StateFlow<AdminDashboardUiState> = combine(
-        reporteRepository.obtenerReportesConUsuario(),
+        reporteRepository.obtenerTodosLosReportes(),
         filtro
     ) { lista, filtroActual ->
         val todos = lista.map { it.toUi() }
@@ -48,13 +46,13 @@ class AdminDashboardViewModel(
     }
 }
 
-private fun ReporteConUsuario.toUi() = AdminReporteUi(
-    id = reporte.id,
-    titulo = reporte.titulo,
-    descripcion = reporte.descripcion,
-    categoria = reporte.categoria,
-    estatus = reporte.estatus,
-    fecha = reporte.fechaCreacion.aFechaHora(),
+private fun ReporteEntity.toUi() = AdminReporteUi(
+    id = id,
+    titulo = titulo,
+    descripcion = descripcion,
+    categoria = categoria,
+    estatus = estatus,
+    fecha = fechaCreacion.aFechaHora(),
     nombreUsuario = nombreUsuario ?: "Usuario desconocido",
-    urgente = reporte.requiereAtencionInmediata
+    urgente = requiereAtencionInmediata
 )

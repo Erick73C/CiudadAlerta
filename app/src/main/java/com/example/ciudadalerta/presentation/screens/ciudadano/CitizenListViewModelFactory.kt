@@ -17,7 +17,7 @@ class CitizenListViewModelFactory(
     private val reporteRepository: ReporteRepository,
     private val usuarioNombre: String,
     private val usuarioCorreo: String,
-    private val usuarioId: Int
+    private val usuarioId: String
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")

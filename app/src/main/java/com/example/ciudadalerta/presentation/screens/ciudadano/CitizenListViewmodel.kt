@@ -30,7 +30,7 @@ class CitizenListViewModel(
     private val reporteRepository: ReporteRepository,
     usuarioNombre: String,
     private val usuarioCorreo: String,
-    private val usuarioId: Int
+    private val usuarioId: String
 ) : ViewModel() {
 
     // Estado para el nombre/correo del usuario

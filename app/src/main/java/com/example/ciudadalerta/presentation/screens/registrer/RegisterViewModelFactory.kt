@@ -2,6 +2,7 @@ package com.example.ciudadalerta.presentation.screens.registrer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.ciudadalerta.domain.repository.AuthRepository
 import com.example.ciudadalerta.domain.repository.UsuarioRepository
 
 
@@ -13,7 +14,7 @@ import com.example.ciudadalerta.domain.repository.UsuarioRepository
  * @author YO
  */
 class RegisterViewModelFactory(
-    private val usuarioRepository: UsuarioRepository
+    private val usuarioRepository: AuthRepository
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

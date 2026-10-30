@@ -2,6 +2,7 @@ package com.example.ciudadalerta.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 /**
  *
@@ -11,8 +12,8 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = "reportes")
 data class ReporteEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
     val titulo: String,
     val descripcion: String,
     val categoria: String,
@@ -20,7 +21,8 @@ data class ReporteEntity(
     val requiereAtencionInmediata: Boolean,
     val estatus: String = "Pendiente",
     val estatusSincronizacion: String = "LOCAL",
-    val usuarioId: Int,
+    val usuarioId: String,
+    val nombreUsuario: String? = null,
     val latitud: Double? = null,
     val longitud: Double? = null,
     val fotoPath: String? = null,

@@ -6,7 +6,7 @@ import com.example.ciudadalerta.domain.repository.ReporteRepository
 
 class ReportDetailViewModelFactory(
     private val reporteRepository: ReporteRepository,
-    private val reporteId: Int
+    private val reporteId: String
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")

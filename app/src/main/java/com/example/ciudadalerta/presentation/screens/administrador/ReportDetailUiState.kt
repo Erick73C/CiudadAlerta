@@ -5,7 +5,7 @@ val estatusReporte = filtrosEstatus.filter { it != FILTRO_TODOS }
 
 /** Datos del reporte tal como los muestra la pantalla de detalle. */
 data class ReportDetailUi(
-    val id: Int,
+    val id: String,
     val titulo: String,
     val descripcion: String,
     val categoria: String,

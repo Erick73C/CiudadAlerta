@@ -90,7 +90,7 @@ fun AdminDashboardScreen(
                         AdminReporteItem(
                             reporte = reporte,
                             onClick = {
-                                navController.navigate(Rutas.ReportDetail.createRoute(reporte.id.toString()))
+                                navController.navigate(Rutas.ReportDetail.createRoute(reporte.id))
                             }
                         )
                     }

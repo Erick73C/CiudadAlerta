@@ -5,7 +5,7 @@ val filtrosEstatus = listOf(FILTRO_TODOS, "Pendiente", "En Revisión", "Resuelto
 
 /** Modelo de un reporte tal como lo muestra el panel del administrador. */
 data class AdminReporteUi(
-    val id: Int,
+    val id: String,
     val titulo: String,
     val descripcion: String,
     val categoria: String,

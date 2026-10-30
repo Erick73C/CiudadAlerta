@@ -22,23 +22,16 @@ class ReporteRepositoryImpl(
         reporteDao.insertarReporte(reporte)
     }
 
-    override fun obtenerTodosLosReportes(): Flow<List<ReporteEntity>> {
-        return reporteDao.obtenerTodosLosReportes()
-    }
+    override fun obtenerTodosLosReportes(): Flow<List<ReporteEntity>> =
+        reporteDao.obtenerTodosLosReportes()
 
-    override fun obtenerReportesPorUsuario(usuarioId: Int): Flow<List<ReporteEntity>> {
-        return reporteDao.obtenerReportesPorUsuario(usuarioId)
-    }
+    override fun obtenerReportesPorUsuario(usuarioId: String): Flow<List<ReporteEntity>> =
+        reporteDao.obtenerReportesPorUsuario(usuarioId)
 
-    override fun obtenerReportesConUsuario(): Flow<List<ReporteConUsuario>> {
-        return reporteDao.obtenerReportesConUsuario()
-    }
+    override fun obtenerReportePorId(id: String): Flow<ReporteEntity?> =
+        reporteDao.obtenerReportePorId(id)
 
-    override suspend fun actualizarEstatus(id: Int, estatus: String) {
+    override suspend fun actualizarEstatus(id: String, estatus: String) {
         reporteDao.actualizarEstatus(id, estatus)
-    }
-
-    override fun obtenerReporteConUsuario(id: Int): Flow<ReporteConUsuario?> {
-        return reporteDao.obtenerReporteConUsuario(id)
     }
 }

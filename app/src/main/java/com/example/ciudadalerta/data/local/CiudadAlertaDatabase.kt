@@ -21,24 +21,16 @@ import kotlinx.coroutines.launch
  */
 @Database(
     entities = [UsuarioEntity::class, ReporteEntity::class],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class CiudadAlertaDatabase : RoomDatabase() {
 
-    abstract fun usuarioDao(): UsuarioDao
     abstract fun reporteDao(): ReporteDao
 
     companion object {
         @Volatile
         private var INSTANCE: CiudadAlertaDatabase? = null
-
-        private val ADMIN_PREDETERMINADO = UsuarioEntity(
-            nombre = "Administrador",
-            correo = "admin@gmail.com",
-            contrasena = "admin123",
-            rol = "Administrador"
-        )
         fun getDatabase(context: Context): CiudadAlertaDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -49,12 +41,6 @@ abstract class CiudadAlertaDatabase : RoomDatabase() {
                     .fallbackToDestructiveMigration(dropAllTables = true)
                     .build()
                 INSTANCE = instance
-                instance
-
-                // Garantiza que siempre exista el admin (no duplica si ya está)
-                CoroutineScope(Dispatchers.IO).launch {
-                    instance.usuarioDao().insertarSiNoExiste(ADMIN_PREDETERMINADO)
-                }
                 instance
             }
         }

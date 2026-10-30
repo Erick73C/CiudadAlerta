@@ -10,13 +10,16 @@ class CreateReportViewModelFactory(
     private val reporteRepository: ReporteRepository,
     private val locationProvider: LocationProvider,
     private val fotoStorage: FotoStorage,
-    private val usuarioId: Int
+    private val usuarioId: String,
+    private val usuarioNombre: String
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CreateReportViewModel::class.java)) {
-            return CreateReportViewModel(reporteRepository, locationProvider, fotoStorage, usuarioId) as T
+            return CreateReportViewModel(
+                reporteRepository, locationProvider, fotoStorage, usuarioId, usuarioNombre
+            ) as T
         }
         throw IllegalArgumentException("Clase ViewModel desconocida: ${modelClass.name}")
     }

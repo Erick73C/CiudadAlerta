@@ -23,7 +23,8 @@ class CreateReportViewModel(
     private val reporteRepository: ReporteRepository,
     private val locationProvider: LocationProvider,
     private val fotoStorage: FotoStorage,
-    private val usuarioId: Int
+    private val usuarioId: String,
+    private val usuarioNombre: String
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateReportUiState())

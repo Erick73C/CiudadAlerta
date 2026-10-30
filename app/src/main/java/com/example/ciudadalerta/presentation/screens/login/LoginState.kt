@@ -1,6 +1,7 @@
 package com.example.ciudadalerta.presentation.screens.login
 
 import com.example.ciudadalerta.data.local.entity.UsuarioEntity
+import com.example.ciudadalerta.domain.models.UsuarioSesion
 
 /**
  *
@@ -10,6 +11,6 @@ import com.example.ciudadalerta.data.local.entity.UsuarioEntity
 sealed class LoginState {
     object Idle : LoginState() // Estado inicial (inactivo)(mostramos un spinner)
     object Loading : LoginState() // Cargando
-    data class Success(val usuario: UsuarioEntity) : LoginState() // Éxito (navegamos a la siguiente pantalla)
+    data class Success(val usuario: UsuarioSesion) : LoginState()
     data class Error(val message: String) : LoginState() // Error (mostramos un mensaje)
 }
