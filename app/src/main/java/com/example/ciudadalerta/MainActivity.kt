@@ -4,13 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.ciudadalerta.presentation.navigation.AppNavigation
 import com.example.ciudadalerta.presentation.permissions.PermissionGate
 import com.example.ciudadalerta.ui.theme.CiudadAlertaTheme
@@ -19,10 +12,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // CLAVE: la Activity no crea nada, solo recibe el contenedor de la Application
+        val container = (application as CiudadAlertaApp).container
+
         setContent {
             CiudadAlertaTheme {
                 PermissionGate {
-                    AppNavigation()
+                    AppNavigation(container = container)
                 }
             }
         }
