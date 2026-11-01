@@ -9,6 +9,7 @@ import com.example.ciudadalerta.data.remote.dto.EstatusUpdate
 import com.example.ciudadalerta.data.remote.dto.ReporteDto
 import com.example.ciudadalerta.domain.models.ResultadoSync
 import com.example.ciudadalerta.domain.repository.ReporteRepository
+import com.example.ciudadalerta.domain.sync.SyncScheduler
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -25,13 +26,15 @@ import java.time.OffsetDateTime
  */
 class ReporteRepositoryImpl(
     private val reporteDao: ReporteDao,
-    private val api: SupabaseApi
+    private val api: SupabaseApi,
+    private val syncScheduler: SyncScheduler
 ) : ReporteRepository {
 
     // Local (lo que ya tenías)
 
     override suspend fun insertarReporte(reporte: ReporteEntity) {
         reporteDao.insertarReporte(reporte) // nace con estatusSincronizacion = LOCAL
+        syncScheduler.solicitarSincronizacion()
     }
 
     override fun obtenerTodosLosReportes(): Flow<List<ReporteEntity>> =
@@ -45,6 +48,7 @@ class ReporteRepositoryImpl(
 
     override suspend fun actualizarEstatus(id: String, estatus: String) {
         reporteDao.actualizarEstatus(id, estatus) // el DAO lo marca ESTATUS_PENDIENTE
+        syncScheduler.solicitarSincronizacion()
     }
 
     //  Sincronización

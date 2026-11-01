@@ -1,6 +1,7 @@
 package com.example.ciudadalerta.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -47,6 +48,14 @@ fun AppNavigation(container: AppContainer) {
     val adminViewModel: AdminDashboardViewModel = viewModel(
         factory = AdminDashboardViewModelFactory(container.reporteRepository)
     )
+
+    //Aqui empieza lo de sincronización
+    // Cada vez que aparece un usuario con sesión (login nuevo o sesión restaurada) se sincroniza
+    val estadoLogin by loginViewModel.loginState.collectAsState()
+    val usuarioActual = (estadoLogin as? LoginState.Success)?.usuario
+    LaunchedEffect(usuarioActual?.id) {
+        if (usuarioActual != null) container.syncScheduler.solicitarSincronizacion()
+    }
 
     NavHost(
         navController = navController,

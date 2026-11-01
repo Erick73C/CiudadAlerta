@@ -13,6 +13,8 @@ import com.example.ciudadalerta.domain.location.LocationProvider
 import com.example.ciudadalerta.domain.repository.AuthRepository
 import com.example.ciudadalerta.domain.repository.ReporteRepository
 import com.example.ciudadalerta.domain.storage.FotoStorage
+import com.example.ciudadalerta.domain.sync.SyncScheduler
+import com.example.ciudadalerta.domain.sync.WorkManagerSyncScheduler
 
 /**
  * Contenedor de dependencias de la aplicación (inyección manual).
@@ -38,7 +40,11 @@ class AppContainer(context: Context) {
 
     //Repositorios
     val authRepository: AuthRepository by lazy { AuthRepositoryImpl(supabaseApi, sessionManager) }
-    val reporteRepository: ReporteRepository by lazy { ReporteRepositoryImpl(database.reporteDao(), supabaseApi) }
+
+    val reporteRepository: ReporteRepository by lazy {
+        ReporteRepositoryImpl(database.reporteDao(), supabaseApi, syncScheduler)
+    }
+    val syncScheduler: SyncScheduler by lazy { WorkManagerSyncScheduler(appContext) }
 
     //Servicios del dispositivo
     val fotoStorage: FotoStorage by lazy { FotoStorageImpl(appContext) }

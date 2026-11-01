@@ -16,5 +16,6 @@ class CiudadAlertaApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this) //se crea una sola vez al arrancar el proceso
+        container.syncScheduler.programarPeriodica()
     }
 }
