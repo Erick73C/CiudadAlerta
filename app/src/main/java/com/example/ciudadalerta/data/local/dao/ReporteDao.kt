@@ -30,6 +30,32 @@ interface ReporteDao {
     @Query("SELECT * FROM reportes WHERE id = :id LIMIT 1")
     fun obtenerReportePorId(id: String): Flow<ReporteEntity?>
 
-    @Query("UPDATE reportes SET estatus = :estatus WHERE id = :id")
+    // El admin cambia el estatus: queda marcado para enviarse (PATCH).
+    // Si el reporte sigue en LOCAL se conserva LOCAL: el POST ya lleva el estatus actual.
+    @Query("""
+        UPDATE reportes SET estatus = :estatus,
+        estatusSincronizacion = CASE WHEN estatusSincronizacion = 'LOCAL'
+                                     THEN 'LOCAL' ELSE 'ESTATUS_PENDIENTE' END
+        WHERE id = :id
+    """)
     suspend fun actualizarEstatus(id: String, estatus: String)
+
+    // Sincronización: subida
+    @Query("SELECT * FROM reportes WHERE estatusSincronizacion = 'LOCAL' ORDER BY fechaCreacion ASC")
+    suspend fun obtenerPendientesDeEnvio(): List<ReporteEntity>
+
+    @Query("SELECT * FROM reportes WHERE estatusSincronizacion = 'ESTATUS_PENDIENTE'")
+    suspend fun obtenerEstatusPendientes(): List<ReporteEntity>
+
+    @Query("UPDATE reportes SET estatusSincronizacion = :estado WHERE id = :id")
+    suspend fun actualizarEstadoSync(id: String, estado: String)
+
+
+    //Sincronización: descarga (no pisa lo local)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertarSiNoExiste(reportes: List<ReporteEntity>)
+
+    // Solo actualiza el estatus de filas ya sincronizadas; nunca pisa un cambio local pendiente.
+    @Query("UPDATE reportes SET estatus = :estatus WHERE id = :id AND estatusSincronizacion = 'ENVIADO'")
+    suspend fun actualizarEstatusDesdeServidor(id: String, estatus: String)
 }
