@@ -38,7 +38,7 @@ class AppContainer(context: Context) {
 
     //Repositorios
     val authRepository: AuthRepository by lazy { AuthRepositoryImpl(supabaseApi, sessionManager) }
-    val reporteRepository: ReporteRepository by lazy { ReporteRepositoryImpl(database.reporteDao()) }
+    val reporteRepository: ReporteRepository by lazy { ReporteRepositoryImpl(database.reporteDao(), supabaseApi) }
 
     //Servicios del dispositivo
     val fotoStorage: FotoStorage by lazy { FotoStorageImpl(appContext) }

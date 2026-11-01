@@ -58,4 +58,8 @@ interface ReporteDao {
     // Solo actualiza el estatus de filas ya sincronizadas; nunca pisa un cambio local pendiente.
     @Query("UPDATE reportes SET estatus = :estatus WHERE id = :id AND estatusSincronizacion = 'ENVIADO'")
     suspend fun actualizarEstatusDesdeServidor(id: String, estatus: String)
+
+    // Marca como enviado SOLO si el estatus no cambió mientras se hacía el PATCH
+    @Query("UPDATE reportes SET estatusSincronizacion = 'ENVIADO' WHERE id = :id AND estatus = :estatus")
+    suspend fun marcarEstatusEnviado(id: String, estatus: String)
 }
