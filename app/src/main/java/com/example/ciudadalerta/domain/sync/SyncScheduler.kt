@@ -1,10 +1,15 @@
 package com.example.ciudadalerta.domain.sync
 
+import kotlinx.coroutines.flow.Flow
 /**
  * Contrato para pedir sincronizaciones en segundo plano.
  * Vive en el dominio para que el repositorio no dependa de WorkManager.
  */
 interface SyncScheduler {
+
+    /** true mientras hay una sincronización ejecutándose. */
+    val sincronizando: Flow<Boolean>
+
     /** Encola una sincronización que se ejecuta en cuanto haya internet. */
     fun solicitarSincronizacion()
 

@@ -20,6 +20,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.ciudadalerta.data.local.entity.EstadoSync
+import com.example.ciudadalerta.presentation.components.SyncBanner
+import com.example.ciudadalerta.presentation.components.SyncChip
 import com.example.ciudadalerta.presentation.navigation.Rutas
 
 /**
@@ -56,6 +59,12 @@ fun AdminDashboardScreen(
         }
     ) { paddingValues ->
         Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+
+            SyncBanner(
+                estado = state.estadoRed,
+                pendientes = state.pendientes,
+                onSincronizar = viewModel::sincronizarAhora
+            )
 
             // Filtros por estatus
             LazyRow(
@@ -175,6 +184,11 @@ private fun AdminReporteItem(reporte: AdminReporteUi, onClick: () -> Unit) {
                         modifier = Modifier.size(20.dp)
                     )
                 }
+            }
+
+            if (reporte.sincronizacion != EstadoSync.ENVIADO) {
+                Spacer(modifier = Modifier.height(4.dp))
+                SyncChip(reporte.sincronizacion)
             }
         }
     }

@@ -2,11 +2,15 @@ package com.example.ciudadalerta.presentation.screens.ciudadano
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ciudadalerta.data.local.entity.EstadoSync
+import com.example.ciudadalerta.domain.models.EstadoRed
 import com.example.ciudadalerta.domain.repository.ReporteRepository
 import com.example.ciudadalerta.presentation.util.aFechaHora
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
@@ -18,7 +22,8 @@ data class ReporteDummy(
     val titulo: String,
     val descripcion: String,
     val estatus: String,
-    val fecha: String
+    val fecha: String,
+    val sincronizacion: String = EstadoSync.ENVIADO
 )
 
 /**
@@ -41,12 +46,16 @@ class CitizenListViewModel(
     private val _reportes = MutableStateFlow<List<ReporteDummy>>(emptyList())
     val reportes: StateFlow<List<ReporteDummy>> = _reportes.asStateFlow()
 
+    val estadoRed: StateFlow<EstadoRed> = reporteRepository.estadoRed
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), EstadoRed.EN_LINEA)
+
     init {
         // Establecemos el saludo inicial con el nombre (o el correo si el nombre está vacío)
         _nombreUsuario.value = usuarioNombre.ifBlank { usuarioCorreo }
         // Cargamos los datos reales desde Room
         cargarReportesDesdeBD()
     }
+    fun sincronizarAhora() = reporteRepository.sincronizarAhora()
 
     private fun cargarReportesDesdeBD() {
         viewModelScope.launch {
@@ -59,7 +68,8 @@ class CitizenListViewModel(
                         titulo = entidad.titulo,
                         descripcion = entidad.descripcion,
                         estatus = entidad.estatus,
-                        fecha = entidad.fechaCreacion.aFechaHora()// Por ahora usamos el campo hora
+                        fecha = entidad.fechaCreacion.aFechaHora(), // Por ahora usamos el campo hora
+                        sincronizacion = entidad.estatusSincronizacion
                     )
                 }
             }

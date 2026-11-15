@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.ciudadalerta.presentation.components.SyncChip
 import com.example.ciudadalerta.presentation.util.colorPorEstatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -179,6 +180,8 @@ private fun DetalleContenido(
                 )
             }
         }
+
+        SyncChip(reporte.sincronizacion)
 
         if (reporte.urgente) {
             Row(verticalAlignment = Alignment.CenterVertically) {

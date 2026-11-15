@@ -16,7 +16,8 @@ data class ReportDetailUi(
     val urgente: Boolean,
     val fotoPath: String?,
     val latitud: Double?,
-    val longitud: Double?
+    val longitud: Double?,
+    val sincronizacion: String
 )
 
 data class ReportDetailUiState(

@@ -2,6 +2,7 @@ package com.example.ciudadalerta.domain.repository
 
 import com.example.ciudadalerta.data.local.entity.ReporteConUsuario
 import com.example.ciudadalerta.data.local.entity.ReporteEntity
+import com.example.ciudadalerta.domain.models.EstadoRed
 import com.example.ciudadalerta.domain.models.ResultadoSync
 import kotlinx.coroutines.flow.Flow
 
@@ -25,4 +26,8 @@ interface ReporteRepository {
     suspend fun descargarReportes(): ResultadoSync
     /** Ejecuta las tres en orden: subir reportes, enviar estatus y descargar. Lo usa el Worker. */
     suspend fun sincronizarTodo(): ResultadoSync
+    /** Estado combinado de red y sincronización para el banner de la UI. */
+    val estadoRed: Flow<EstadoRed>
+    /** Pide una sincronización inmediata (botón "Sincronizar"). */
+    fun sincronizarAhora()
 }

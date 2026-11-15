@@ -7,10 +7,16 @@ import com.example.ciudadalerta.data.remote.SupabaseApi
 import com.example.ciudadalerta.data.remote.SupabaseConfig
 import com.example.ciudadalerta.data.remote.dto.EstatusUpdate
 import com.example.ciudadalerta.data.remote.dto.ReporteDto
+import com.example.ciudadalerta.domain.models.EstadoRed
 import com.example.ciudadalerta.domain.models.ResultadoSync
 import com.example.ciudadalerta.domain.repository.ReporteRepository
+import com.example.ciudadalerta.domain.sync.ConexionObserver
 import com.example.ciudadalerta.domain.sync.SyncScheduler
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.transformLatest
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
@@ -27,7 +33,8 @@ import java.time.OffsetDateTime
 class ReporteRepositoryImpl(
     private val reporteDao: ReporteDao,
     private val api: SupabaseApi,
-    private val syncScheduler: SyncScheduler
+    private val syncScheduler: SyncScheduler,
+    private val conexionObserver: ConexionObserver
 ) : ReporteRepository {
 
     // Local (lo que ya tenías)
@@ -49,6 +56,27 @@ class ReporteRepositoryImpl(
     override suspend fun actualizarEstatus(id: String, estatus: String) {
         reporteDao.actualizarEstatus(id, estatus) // el DAO lo marca ESTATUS_PENDIENTE
         syncScheduler.solicitarSincronizacion()
+    }
+
+
+    override val estadoRed: Flow<EstadoRed> = combine(
+        conexionObserver.conectado,
+        syncScheduler.sincronizando.mantenerVisible()
+    ) { conectado, sincronizando ->
+        when {
+            !conectado -> EstadoRed.SIN_CONEXION
+            sincronizando -> EstadoRed.SINCRONIZANDO
+            else -> EstadoRed.EN_LINEA
+        }
+    }
+
+    override fun sincronizarAhora() = syncScheduler.solicitarSincronizacion()
+
+    /** Una sincronización dura milisegundos: se mantiene 1.2 s el "true" para que el usuario alcance a verlo. */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun Flow<Boolean>.mantenerVisible(): Flow<Boolean> = transformLatest { activo ->
+        if (!activo) delay(1_200)
+        emit(activo)
     }
 
     //  Sincronización

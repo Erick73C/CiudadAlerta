@@ -74,5 +74,6 @@ private fun ReporteEntity.toDetailUi() = ReportDetailUi(
     urgente = requiereAtencionInmediata,
     fotoPath = fotoPath,
     latitud = latitud,
-    longitud = longitud
+    longitud = longitud,
+    sincronizacion = estatusSincronizacion
 )
