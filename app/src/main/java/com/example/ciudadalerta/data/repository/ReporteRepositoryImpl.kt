@@ -8,15 +8,18 @@ import com.example.ciudadalerta.data.remote.SupabaseConfig
 import com.example.ciudadalerta.data.remote.dto.EstatusUpdate
 import com.example.ciudadalerta.data.remote.dto.ReporteDto
 import com.example.ciudadalerta.domain.models.EstadoRed
+import com.example.ciudadalerta.domain.models.ResultadoFoto
 import com.example.ciudadalerta.domain.models.ResultadoSync
 import com.example.ciudadalerta.domain.repository.ReporteRepository
 import com.example.ciudadalerta.domain.sync.ConexionObserver
 import com.example.ciudadalerta.domain.sync.SyncScheduler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
@@ -34,7 +37,9 @@ class ReporteRepositoryImpl(
     private val reporteDao: ReporteDao,
     private val api: SupabaseApi,
     private val syncScheduler: SyncScheduler,
-    private val conexionObserver: ConexionObserver
+    private val conexionObserver: ConexionObserver,
+    private val carpetaCache: File,
+    private val renovarSesion: suspend () -> Boolean
 ) : ReporteRepository {
 
     // Local (lo que ya tenías)
@@ -218,4 +223,35 @@ class ReporteRepositoryImpl(
             ?.let { runCatching { OffsetDateTime.parse(it).toInstant().toEpochMilli() }.getOrNull() }
             ?: System.currentTimeMillis()
     )
+
+    override suspend fun obtenerFoto(fotoPath: String): ResultadoFoto = withContext(Dispatchers.IO) {
+        // 1) Ruta absoluta = archivo de este mismo teléfono
+        if (fotoPath.startsWith("/")) {
+            val archivo = File(fotoPath)
+            return@withContext if (archivo.exists()) ResultadoFoto.Lista(archivo.absolutePath)
+            else ResultadoFoto.NoDisponible
+        }
+
+        // 2) Ruta del bucket: si ya se descargó antes, se reutiliza sin red
+        val destino = File(carpetaCache, fotoPath.replace('/', '_'))
+        if (destino.exists() && destino.length() > 0) {
+            return@withContext ResultadoFoto.Lista(destino.absolutePath)
+        }
+
+        try {
+            renovarSesion() // el bucket es privado: hace falta un token vigente
+            val respuesta = api.descargarFoto(SupabaseConfig.BUCKET_FOTOS, fotoPath)
+            val cuerpo = respuesta.body()
+            if (!respuesta.isSuccessful || cuerpo == null) return@withContext ResultadoFoto.NoDisponible
+
+            carpetaCache.mkdirs()
+            // CLAVE: se escribe a un .tmp y luego se renombra, para no dejar una foto a medias si se corta la red
+            val temporal = File(carpetaCache, destino.name + ".tmp")
+            cuerpo.use { c -> temporal.outputStream().use { salida -> c.byteStream().copyTo(salida) } }
+            temporal.renameTo(destino)
+            ResultadoFoto.Lista(destino.absolutePath)
+        } catch (e: IOException) {
+            ResultadoFoto.SinConexion
+        }
+    }
 }

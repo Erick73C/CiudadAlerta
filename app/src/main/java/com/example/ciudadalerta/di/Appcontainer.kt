@@ -17,6 +17,7 @@ import com.example.ciudadalerta.domain.storage.FotoStorage
 import com.example.ciudadalerta.domain.sync.ConexionObserver
 import com.example.ciudadalerta.domain.sync.SyncScheduler
 import com.example.ciudadalerta.domain.sync.WorkManagerSyncScheduler
+import java.io.File
 import kotlin.getValue
 
 /**
@@ -47,7 +48,11 @@ class AppContainer(context: Context) {
     val conexionObserver: ConexionObserver by lazy { ConexionObserverImpl(appContext) }
 
     val reporteRepository: ReporteRepository by lazy {
-        ReporteRepositoryImpl(database.reporteDao(), supabaseApi, syncScheduler, conexionObserver)
+        ReporteRepositoryImpl(
+            database.reporteDao(), supabaseApi, syncScheduler, conexionObserver,
+            carpetaCache = File(appContext.cacheDir, "fotos_remotas"),
+            renovarSesion = { authRepository.renovarSesionSiExpiro() }
+        )
     }
     val syncScheduler: SyncScheduler by lazy { WorkManagerSyncScheduler(appContext) }
 

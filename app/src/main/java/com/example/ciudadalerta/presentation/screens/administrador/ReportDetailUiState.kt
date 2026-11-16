@@ -25,5 +25,8 @@ data class ReportDetailUiState(
     val estatusSeleccionado: String? = null, // lo que el admin eligió, aún sin guardar
     val cargando: Boolean = true,
     val guardando: Boolean = false,
-    val mensaje: String? = null
+    val mensaje: String? = null,
+    val fotoRuta: String? = null,       // archivo local listo para mostrar
+    val fotoCargando: Boolean = false,
+    val fotoError: String? = null
 )

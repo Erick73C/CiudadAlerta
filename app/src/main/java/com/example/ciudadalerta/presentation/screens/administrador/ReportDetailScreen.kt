@@ -94,7 +94,12 @@ fun ReportDetailScreen(
                 onEstatusSeleccionado = viewModel::onEstatusSeleccionado,
                 onActualizar = viewModel::actualizarEstatus,
                 onSinAppDeMapas = { viewModel.mostrarMensaje("No hay una app de mapas instalada") },
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(paddingValues),
+                fotoRuta = state.fotoRuta,
+                fotoCargando = state.fotoCargando,
+                fotoError = state.fotoError,
+                onReintentarFoto = viewModel::reintentarFoto,
+
             )
         }
     }
@@ -108,15 +113,19 @@ private fun DetalleContenido(
     onEstatusSeleccionado: (String) -> Unit,
     onActualizar: () -> Unit,
     onSinAppDeMapas: () -> Unit,
+    fotoRuta: String?,
+    fotoCargando: Boolean,
+    fotoError: String?,
+    onReintentarFoto: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
     // La foto se decodifica fuera del hilo principal y reducida para no gastar memoria
-    val fotoBitmap by produceState<ImageBitmap?>(initialValue = null, reporte.fotoPath) {
-        value = reporte.fotoPath?.let { path ->
+    val fotoBitmap by produceState<ImageBitmap?>(initialValue = null, fotoRuta) {
+        value = fotoRuta?.let { ruta ->
             withContext(Dispatchers.IO) {
-                BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = 4 })
+                BitmapFactory.decodeFile(ruta, BitmapFactory.Options().apply { inSampleSize = 4 })
                     ?.asImageBitmap()
             }
         }
@@ -147,10 +156,17 @@ private fun DetalleContenido(
                     contentScale = ContentScale.Fit
                 )
             } else {
-                Text(
-                    text = if (reporte.fotoPath == null) "Sin foto" else "Cargando foto...",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                when {
+                    reporte.fotoPath == null -> Text(
+                        "Sin foto",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    fotoError != null -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(fotoError, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        TextButton(onClick = onReintentarFoto) { Text("Reintentar") }
+                    }
+                    else -> CircularProgressIndicator() // descargando o decodificando
+                }
             }
         }
 
