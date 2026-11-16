@@ -39,7 +39,8 @@ class ReporteRepositoryImpl(
     private val syncScheduler: SyncScheduler,
     private val conexionObserver: ConexionObserver,
     private val carpetaCache: File,
-    private val renovarSesion: suspend () -> Boolean
+    private val renovarSesion: suspend () -> Boolean,
+    private val usuarioActualId: () -> String?
 ) : ReporteRepository {
 
     // Local (lo que ya tenías)
@@ -97,8 +98,9 @@ class ReporteRepositoryImpl(
     }
 
     override suspend fun sincronizarPendientes(): ResultadoSync {
+        val usuarioId = usuarioActualId() ?: return ResultadoSync.EXITO // sin sesión no se sube nada
         var resultado = ResultadoSync.EXITO
-        for (reporte in reporteDao.obtenerPendientesDeEnvio()) {
+        for (reporte in reporteDao.obtenerPendientesDeEnvio(usuarioId)) {
             val actual = subirReporte(reporte)
             if (actual == ResultadoSync.REINTENTAR) return actual
             resultado = resultado.peor(actual) // un FALLO no detiene a los demás reportes

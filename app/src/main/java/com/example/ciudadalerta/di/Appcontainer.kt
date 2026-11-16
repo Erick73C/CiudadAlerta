@@ -51,7 +51,8 @@ class AppContainer(context: Context) {
         ReporteRepositoryImpl(
             database.reporteDao(), supabaseApi, syncScheduler, conexionObserver,
             carpetaCache = File(appContext.cacheDir, "fotos_remotas"),
-            renovarSesion = { authRepository.renovarSesionSiExpiro() }
+            renovarSesion = { authRepository.renovarSesionSiExpiro() },
+            usuarioActualId = { authRepository.restaurarSesion()?.id }
         )
     }
     val syncScheduler: SyncScheduler by lazy { WorkManagerSyncScheduler(appContext) }

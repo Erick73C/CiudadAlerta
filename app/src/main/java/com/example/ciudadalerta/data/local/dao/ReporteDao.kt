@@ -41,8 +41,8 @@ interface ReporteDao {
     suspend fun actualizarEstatus(id: String, estatus: String)
 
     // Sincronización: subida
-    @Query("SELECT * FROM reportes WHERE estatusSincronizacion = 'LOCAL' ORDER BY fechaCreacion ASC")
-    suspend fun obtenerPendientesDeEnvio(): List<ReporteEntity>
+    @Query("SELECT * FROM reportes WHERE estatusSincronizacion = 'LOCAL' AND usuarioId = :usuarioId ORDER BY fechaCreacion ASC")
+    suspend fun obtenerPendientesDeEnvio(usuarioId: String): List<ReporteEntity>
 
     @Query("SELECT * FROM reportes WHERE estatusSincronizacion = 'ESTATUS_PENDIENTE'")
     suspend fun obtenerEstatusPendientes(): List<ReporteEntity>
